@@ -1,45 +1,22 @@
 from rest_framework import serializers
 from escola.models import Estudante, Curso, Matricula
 import re
+from escola.validators import cpf_invalido, nome_invalido, celular_invalido
 
 class EstudanteSerializer(serializers.ModelSerializer):
   class Meta:
       model = Estudante
       fields = ['id', 'nome', 'email', 'cpf', 'data_nascimento', 'celular']
       
-  def validate_cpf(self, cpf):
-      cpf = ''.join(re.findall(r'\d', str(cpf)))
-      
-      if len(cpf) != 11:
-        raise serializers.ValidationError("O CPF deve conter exatamente 11 dígitos.")
-      
-      if len(set(cpf)) == 1:
-        raise serializers.ValidationError("CPF inválido (dígitos repetidos).")
-      
-      soma = 0
-      
-      for i in range(9):
-        soma += int(cpf[i]) * (10 - i)
-        
-      resto = soma % 11
-      digito_verificador_1 = 0 if resto < 2 else 11 - resto
-      
-      if int(cpf[9]) != digito_verificador_1:
-        raise serializers.ValidationError("CPF inválido.")
-      
-      soma = 0
-      
-      for i in range(10):
-        soma += int(cpf[i]) * (11 - i)
-        
-      resto = soma % 11
-      digito_verificador_2 = 0 if resto < 2 else 11 - resto
-      
-      if int(cpf[10]) != digito_verificador_2:
-        raise serializers.ValidationError("CPF inválido.")
-      
-      return cpf
-
+  def validate(self, dados):
+    if cpf_invalido(dados['cpf']):
+      raise serializers.ValidationError
+    if nome_invalido(dados['nome']):
+      raise serializers.ValidationError({"nome": "O nome só pode conter letras"})
+    if celular_invalido(dados['celular']):
+      raise serializers.ValidationError({"celular":"O celular precisa conter 13 dígitos"})
+    return dados
+    
 class CursoSerializer(serializers.ModelSerializer):
   class Meta:
       model = Curso
