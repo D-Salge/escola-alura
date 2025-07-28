@@ -1,36 +1,18 @@
 import re
+from validate_docbr import CPF
 from rest_framework import serializers
 
-def cpf_invalido(cpf):
-    cpf = ''.join(re.findall(r'\d', str(cpf)))
-    if len(cpf) != 11:
-        raise serializers.ValidationError({"cpf": "O CPF deve conter exatamente 11 dígitos."})
-
-    if len(set(cpf)) == 1:
-        raise serializers.ValidationError({"cpf": "CPF inválido (dígitos repetidos)."})
-
-    soma = 0
-    for i in range(9):
-        soma += int(cpf[i]) * (10 - i)
-    resto = soma % 11
-    digito_verificador_1 = 0 if resto < 2 else 11 - resto
-
-    if int(cpf[9]) != digito_verificador_1:
-        raise serializers.ValidationError({"cpf": "CPF inválido."})
-
-    soma = 0
-    for i in range(10):
-        soma += int(cpf[i]) * (11 - i)
-    resto = soma % 11
-    digito_verificador_2 = 0 if resto < 2 else 11 - resto
-
-    if int(cpf[10]) != digito_verificador_2:
-        raise serializers.ValidationError({"cpf": "CPF inválido."})
+def cpf_invalido(numero_cpf):
+    cpf = CPF()
+    cpf_valido = cpf.validate(numero_cpf)
+    return not cpf_valido
 
 def nome_invalido(nome):
-    if not nome.isalpha():
-        raise serializers.ValidationError({"nome": "O nome só pode conter letras."})
+    return not nome.isalpha()
 
 def celular_invalido(celular):
-    if len(celular) != 13:
-        raise serializers.ValidationError({"celular": "O celular precisa conter 13 dígitos."})
+    # 86 99999-9999
+    modelo = '[0-9]{2} [0-9]{5}-[0-9]{4}'
+    resposta = re.findall(modelo, celular)
+    print(resposta)
+    return not resposta
