@@ -1,25 +1,24 @@
 from django.contrib import admin
-from escola.models import Estudante, Curso, Matricula
+from escola.models import Estudante,Curso, Matricula
 
-class EstudanteAdmin(admin.ModelAdmin):
-  list_display = ('id', 'nome', 'email', 'cpf', 'data_nascimento', 'celular')
-  list_display_links = ('id', 'nome')
-  search_fields = ('nome', 'cpf',)
-  ordering = ('nome', 'id',)
-  list_per_page = 20
+class Estudantes(admin.ModelAdmin):
+    list_display = ('id','nome','email','cpf','data_nascimento','celular')
+    list_display_links = ('id','nome',)
+    list_per_page = 20
+    search_fields = ('nome', 'cpf',)
+    ordering = ('nome',)
 
-class CursoAdmin(admin.ModelAdmin):
-  list_display = ('id', 'codigo', 'descricao', 'nivel')
-  list_display_links = ('id', 'codigo')
-  search_fields = ('codigo',)
-  list_per_page = 20
+admin.site.register(Estudante,Estudantes)
 
-class MatriculaAdmin(admin.ModelAdmin):
-  list_display = ('id', 'estudante', 'curso', 'periodo')
-  list_display_links = ('id',)
-  search_fields = ('estudante__nome', 'curso__codigo')
-  list_per_page = 20
+class Cursos(admin.ModelAdmin):
+    list_display = ('id','codigo','descricao')
+    list_display_links = ('id','codigo',)
+    search_fields = ('codigo',)
 
-admin.site.register(Estudante, EstudanteAdmin)
-admin.site.register(Curso, CursoAdmin)
-admin.site.register(Matricula, MatriculaAdmin)
+admin.site.register(Curso,Cursos)
+
+class Matriculas(admin.ModelAdmin):
+    list_display = ('id','estudante','curso','periodo')
+    list_display_links = ('id',)
+
+admin.site.register(Matricula,Matriculas)
